@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jonchki-artifact version="1.0">
+	<info group="org.openresty"
+	      module="openresty"
+	      artifact="openresty"
+	      version="@PROJECT_VERSION@"
+	      vcs-id="@PROJECT_VERSION_VCS@"
+	      extension="tar.xz"
+	      platform="@JONCHKI_PLATFORM@">
+		<license name="BSD"/>
+		<author name="openresty team" url="http://openresty.org" />
+		<description>OpenResty is an nginx distribution which includes the LuaJIT interpreter for Lua scripts.</description>
+	</info>
+	<dependencies>
+	</dependencies>
+</jonchki-artifact>

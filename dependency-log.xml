@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dependency-log>
+	<dependencies>
+		<dependency group="net.zlib" module="zlib" artifact="zlib" version="1.2.13.1"/>
+		<dependency group="org.openresty" module="openresty" artifact="openresty" version="1.21.4.2.1"/>
+	</dependencies>
+	<build-dependencies>
+	</build-dependencies>
+</dependency-log>
