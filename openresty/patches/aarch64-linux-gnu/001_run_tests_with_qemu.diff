@@ -6,7 +6,7 @@ diff -uNr openresty-1.21.4.2/bundle/nginx-1.21.4/auto/feature openresty-1.21.4.2
          yes)
              # /bin/sh is used to intercept "Killed" or "Abort trap" messages
 -            if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
-+            if qemu-aarch64 -L/usr/aarch64-linux-gnu/ $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
++            if qemu-aarch64 -L /usr/aarch64-linux-gnu/ $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
                  echo " found"
                  ngx_found=yes
  
@@ -15,7 +15,7 @@ diff -uNr openresty-1.21.4.2/bundle/nginx-1.21.4/auto/feature openresty-1.21.4.2
          value)
              # /bin/sh is used to intercept "Killed" or "Abort trap" messages
 -            if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
-+            if qemu-aarch64 -L/usr/aarch64-linux-gnu/ $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
++            if qemu-aarch64 -L /usr/aarch64-linux-gnu/ $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
                  echo " found"
                  ngx_found=yes
  
@@ -24,7 +24,7 @@ diff -uNr openresty-1.21.4.2/bundle/nginx-1.21.4/auto/feature openresty-1.21.4.2
          bug)
              # /bin/sh is used to intercept "Killed" or "Abort trap" messages
 -            if /bin/sh -c $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
-+            if qemu-aarch64 -L/usr/aarch64-linux-gnu/ $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
++            if qemu-aarch64 -L /usr/aarch64-linux-gnu/ $NGX_AUTOTEST >> $NGX_AUTOCONF_ERR 2>&1; then
                  echo " not found"
  
              else
@@ -36,7 +36,7 @@ diff -uNr openresty-1.21.4.2/bundle/nginx-1.21.4/auto/types/sizeof openresty-1.2
  
  if [ -x $NGX_AUTOTEST ]; then
 -    ngx_size=`$NGX_AUTOTEST`
-+    ngx_size=`qemu-aarch64 -L/usr/aarch64-linux-gnu/ $NGX_AUTOTEST`
++    ngx_size=`qemu-aarch64 -L /usr/aarch64-linux-gnu/ $NGX_AUTOTEST`
      echo " $ngx_size bytes"
  fi
  
