@@ -75,20 +75,22 @@ if tPlatform['host_distribution_id'] == 'ubuntu':
 
             # This is terrible, but there was no way to pass the include and library paths as parameters to the openresty
             # build scripts.
-            os.symlink(
-                os.path.join(
-                    strCfg_workingFolder,
-                    'packages/usr/lib/aarch64-linux-gnu/libcrypt.a'
-                ),
-                '/usr/aarch64-linux-gnu/lib/libcrypt.a'
-            )
-            os.symlink(
-                os.path.join(
-                    strCfg_workingFolder,
-                    'packages/usr/include/crypt.h'
-                ),
-                '/usr/aarch64-linux-gnu/include/crypt.h'
-            )
+            if os.path.exists('/usr/aarch64-linux-gnu/lib/libcrypt.a') is not True:
+                os.symlink(
+                    os.path.join(
+                        strCfg_workingFolder,
+                        'packages/usr/lib/aarch64-linux-gnu/libcrypt.a'
+                    ),
+                    '/usr/aarch64-linux-gnu/lib/libcrypt.a'
+                )
+            if os.path.exists('/usr/aarch64-linux-gnu/include/crypt.h') is not True:
+                os.symlink(
+                    os.path.join(
+                        strCfg_workingFolder,
+                        'packages/usr/include/crypt.h'
+                    ),
+                    '/usr/aarch64-linux-gnu/include/crypt.h'
+                )
 
             astrCMAKE_COMPILER = [
                 '-DCMAKE_TOOLCHAIN_FILE=%s/cmake/toolchainfiles/toolchain_ubuntu_arm64.cmake' % strCfg_projectFolder
