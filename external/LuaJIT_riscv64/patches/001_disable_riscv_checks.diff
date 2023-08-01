@@ -1,0 +1,43 @@
+diff -uNr LuaJIT-riscv/src/lj_arch.h LuaJIT-riscv_patched/src/lj_arch.h
+--- LuaJIT-riscv/src/lj_arch.h	2023-07-15 08:04:46.000000000 +0000
++++ LuaJIT-riscv_patched/src/lj_arch.h	2023-08-01 14:47:31.829031298 +0000
+@@ -447,7 +447,7 @@
+ #error "No support for RISC-V 32"
+ 
+ #elif LUAJIT_TARGET == LUAJIT_ARCH_RISCV64
+-#if defined(__riscv_float_abi_double)
++//#if defined(__riscv_float_abi_double)
+ 
+ #define LJ_ARCH_NAME		"riscv64"
+ #define LJ_ARCH_BITS		64
+@@ -465,9 +465,9 @@
+ // for now
+ #define LUAJIT_NO_UNWIND	1
+ 
+-#else
+-#error "No support for RISC-V 64 Soft-float/Single-float"
+-#endif
++//#else
++//#error "No support for RISC-V 64 Soft-float/Single-float"
++//#endif
+ 
+ #else
+ #error "No target architecture defined"
+@@ -553,12 +553,12 @@
+ #error "Only n64 ABI supported for MIPS64"
+ #endif
+ #elif LJ_TARGET_RISCV
+-#if !defined(__riscv_float_abi_double)
+-#error "Only RISC-V 64 double float supported for now"
+-#endif
+-#if defined(__riscv_compressed)
+-#error "Compressed instructions not supported for now"
+-#endif
++//#if !defined(__riscv_float_abi_double)
++//#error "Only RISC-V 64 double float supported for now"
++//#endif
++//#if defined(__riscv_compressed)
++//#error "Compressed instructions not supported for now"
++//#endif
+ #endif
+ #endif

@@ -11,4 +11,8 @@ ADD_SUBDIRECTORY(openssl)
 ADD_SUBDIRECTORY(pcre)
 ADD_SUBDIRECTORY(zlib)
 
+IF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+	ADD_SUBDIRECTORY(LuaJIT_riscv64)
+ENDIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+
 #----------------------------------------------------------------------------

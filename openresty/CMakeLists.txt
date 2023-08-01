@@ -39,20 +39,10 @@ SET(NGX_COMPILER_CPP "")
 SET(NGINX_PCRE_CONFIG "")
 SET(NGINX_OPENSSL_CONFIG "")
 SET(PATCHES_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/patches/none")
+SET(DEPENDS_LUAJIT "")
+SET(EXTERNAL_LUAJIT "")
 
 IF(${CMAKE_CROSSCOMPILING})
-	IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		# Get the prefix of the compiler.
-		GET_FILENAME_COMPONENT(GCC_BASENAME ${CMAKE_C_COMPILER} NAME)
-		IF(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
-			SET(CONFIGURE_HOST "${CMAKE_MATCH_1}")
-		ELSE(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
-			MESSAGE(FATAL_ERROR "Failed to extract the compiler prefix from the C compiler ${CMAKE_C_COMPILER}")
-		ENDIF(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
-	ELSE(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		MESSAGE(FATAL_ERROR "Cross compiling detected, but not using GCC. This is currently not supported.")
-	ENDIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-
 	# Extract the architecture.
 	STRING(REGEX MATCH "[^-]+" CONFIGURE_ARCH ${CONFIGURE_HOST})
 
@@ -70,10 +60,16 @@ IF(${CMAKE_CROSSCOMPILING})
 
 	# Select the patches.
 	SET(PATCHES_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/patches/${CONFIGURE_HOST}")
+
+	# Use the external LuaJIT on riscv64.
+	IF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+		SET(DEPENDS_LUAJIT TARGET_luajit)
+		SET(EXTERNAL_LUAJIT "--with-luajit=${CMAKE_BINARY_DIR}/external/luajit/install")
+	ENDIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
 ENDIF(${CMAKE_CROSSCOMPILING})
 
 SET(LUAJIT_COMMAND "make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS}")
-SET(NGINX_COMMAND "./configure --with-pcre=${PCRE_SRC_DIR} --with-zlib=${ZLIB_SRC_DIR} --with-openssl=${OPENSSL_SRC_DIR} --user=www --group=www --build=muhkuh ${NGINX_PCRE_CONFIG} ${NGINX_OPENSSL_CONFIG} ${NGINX_COMPILER_CC} ${NGINX_COMPILER_CPP}")
+SET(NGINX_COMMAND "./configure --with-pcre=${PCRE_SRC_DIR} --with-zlib=${ZLIB_SRC_DIR} --with-openssl=${OPENSSL_SRC_DIR} ${EXTERNAL_LUAJIT} --user=www --group=www --build=muhkuh ${NGINX_PCRE_CONFIG} ${NGINX_OPENSSL_CONFIG} ${NGINX_COMPILER_CC} ${NGINX_COMPILER_CPP}")
 
 MESSAGE("*** LuaJit build command: ${LUAJIT_COMMAND}")
 MESSAGE("*** configure command: ${NGINX_COMMAND}")
@@ -84,7 +80,7 @@ ExternalProject_Add(TARGET_openresty
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openresty
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/openresty-${VERSION_EXTERNAL}.tar.gz
                     URL_HASH SHA1=f8320b4d2d09fea46b01ee115465f8c67a36c024
-                    DEPENDS TARGET_openssl TARGET_pcre TARGET_zlib
+                    DEPENDS TARGET_openssl TARGET_pcre TARGET_zlib ${DEPENDS_LUAJIT}
                     PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/openresty/src/TARGET_openresty --patch-folder ${PATCHES_FOLDER} --strip 1
                     CONFIGURE_COMMAND /usr/bin/bash -c -- ${CONFIGURE_CMD}
                     BUILD_IN_SOURCE true

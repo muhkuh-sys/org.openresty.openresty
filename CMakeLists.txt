@@ -23,6 +23,21 @@ ENDIF(CMAKE_VERSION VERSION_LESS 3.12.0)
 # Set some installation folders.
 INCLUDE(cmake/muhkuh_installation_folders.cmake)
 
+IF(${CMAKE_CROSSCOMPILING})
+	IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		# Get the prefix of the compiler.
+		GET_FILENAME_COMPONENT(GCC_BASENAME ${CMAKE_C_COMPILER} NAME)
+		IF(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
+			SET(CONFIGURE_HOST "${CMAKE_MATCH_1}")
+		ELSE(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
+			MESSAGE(FATAL_ERROR "Failed to extract the compiler prefix from the C compiler ${CMAKE_C_COMPILER}")
+		ENDIF(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
+	ELSE(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		MESSAGE(FATAL_ERROR "Cross compiling detected, but not using GCC. This is currently not supported.")
+	ENDIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+ENDIF(${CMAKE_CROSSCOMPILING})
+
+
 #----------------------------------------------------------------------------
 #
 # Include the projects in the subdirectories.
