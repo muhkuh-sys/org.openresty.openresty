@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 from jonchki import cli_args
-#from jonchki import install
+from jonchki import install
 
 import glob
 import os
@@ -64,7 +64,31 @@ if tPlatform['host_distribution_id'] == 'ubuntu':
             strMake = 'make'
 
         elif tPlatform['cpu_architecture'] == 'arm64':
-            # Build on linux for raspberry.
+            # Build on linux for arm64.
+
+            # Install the build dependencies.
+            astrDeb = [
+                'libcrypt1:arm64',
+                'libcrypt-dev:arm64'
+            ]
+            install.install_foreign_debs(astrDeb, strCfg_workingFolder, strCfg_projectFolder)
+
+            # This is terrible, but there was no way to pass the include and library paths as parameters to the openresty
+            # build scripts.
+            os.symlink(
+                os.path.join(
+                    strCfg_workingFolder,
+                    'packages/usr/lib/aarch64-linux-gnu/libcrypt.a'
+                ),
+                '/usr/aarch64-linux-gnu/lib/libcrypt.a'
+            )
+            os.symlink(
+                os.path.join(
+                    strCfg_workingFolder,
+                    'packages/usr/include/crypt.h'
+                ),
+                '/usr/aarch64-linux-gnu/include/crypt.h'
+            )
 
             astrCMAKE_COMPILER = [
                 '-DCMAKE_TOOLCHAIN_FILE=%s/cmake/toolchainfiles/toolchain_ubuntu_arm64.cmake' % strCfg_projectFolder
