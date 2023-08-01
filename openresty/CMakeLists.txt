@@ -38,6 +38,7 @@ SET(NGX_COMPILER_CC "")
 SET(NGX_COMPILER_CPP "")
 SET(NGINX_PCRE_CONFIG "")
 SET(NGINX_OPENSSL_CONFIG "")
+SET(PATCHES_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/patches/none")
 
 IF(${CMAKE_CROSSCOMPILING})
 	IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -66,6 +67,9 @@ IF(${CMAKE_CROSSCOMPILING})
 	# Set the configure options for PCRE and openSSL.
 	SET(NGINX_PCRE_CONFIG "--with-pcre-conf-opt=--host=${CONFIGURE_HOST}")
 	SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-${CONFIGURE_ARCH} --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+
+	# Select the patches.
+	SET(PATCHES_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/patches/${CONFIGURE_HOST}")
 ENDIF(${CMAKE_CROSSCOMPILING})
 
 SET(LUAJIT_COMMAND "make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS}")
@@ -81,7 +85,7 @@ ExternalProject_Add(TARGET_openresty
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/openresty-${VERSION_EXTERNAL}.tar.gz
                     URL_HASH SHA1=f8320b4d2d09fea46b01ee115465f8c67a36c024
                     DEPENDS TARGET_openssl TARGET_pcre TARGET_zlib
-#                    PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/openresty/src/TARGET_openresty --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
+                    PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/openresty/src/TARGET_openresty --patch-folder ${PATCHES_FOLDER} --strip 1
                     CONFIGURE_COMMAND /usr/bin/bash -c -- ${CONFIGURE_CMD}
                     BUILD_IN_SOURCE true
                     BUILD_COMMAND make
