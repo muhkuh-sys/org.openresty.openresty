@@ -32,22 +32,57 @@ MESSAGE("OPENSSL_SRC_DIR = ${OPENSSL_SRC_DIR}")
 MESSAGE("PCRE_SRC_DIR    = ${PCRE_SRC_DIR}")
 MESSAGE("ZLIB_SRC_DIR    = ${ZLIB_SRC_DIR}")
 
-SET(NGINX_COMPILER "--with-cc=${CMAKE_C_COMPILER}")
-IF(NOT CMAKE_C_FLAGS STREQUAL "")
-	STRING(APPEND NGINX_COMPILER " --with-cc-opt=\"${CMAKE_C_FLAGS}\"")
-ENDIF(NOT CMAKE_C_FLAGS STREQUAL "")
-#  --with-cpp='${CMAKE_CXX_COMPILER}'
+SET(LUAJIT_OPTION_HOST "")
+SET(LUAJIT_OPTION_CROSS "")
+SET(NGX_COMPILER_CC "")
+SET(NGX_COMPILER_CPP "")
+SET(NGINX_PCRE_CONFIG "")
+SET(NGINX_OPENSSL_CONFIG "")
 
-SET(NGINX_CONFIG "--user=www --group=www --build=muhkuh")
+IF(${CMAKE_CROSSCOMPILING})
+	IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		# Get the prefix of the compiler.
+		GET_FILENAME_COMPONENT(GCC_BASENAME ${CMAKE_C_COMPILER} NAME)
+		IF(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
+			SET(CONFIGURE_HOST "${CMAKE_MATCH_1}")
+		ELSE(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
+			MESSAGE(FATAL_ERROR "Failed to extract the compiler prefix from the C compiler ${CMAKE_C_COMPILER}")
+		ENDIF(GCC_BASENAME MATCHES "([^-]+-[^-]+-[^-]+)-gcc")
+	ELSE(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		MESSAGE(FATAL_ERROR "Cross compiling detected, but not using GCC. This is currently not supported.")
+	ENDIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
+	# Extract the architecture.
+	STRING(REGEX MATCH "[^-]+" CONFIGURE_ARCH ${CONFIGURE_HOST})
+
+	# Set the compile options for LuaJIT.
+	SET(LUAJIT_OPTION_HOST "HOST_CC=gcc")
+	SET(LUAJIT_OPTION_CROSS "CROSS=${CONFIGURE_HOST}-")
+
+	# Set the compiler for nginx.
+	SET(NGINX_COMPILER_CC "--with-cc=${CMAKE_C_COMPILER}")
+	SET(NGINX_COMPILER_CPP "--with-cpp=${CONFIGURE_HOST}-cpp")
+
+	# Set the configure options for PCRE and openSSL.
+	SET(NGINX_PCRE_CONFIG "--with-pcre-conf-opt=--host=${CONFIGURE_HOST}")
+	SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-${CONFIGURE_ARCH} --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+ENDIF(${CMAKE_CROSSCOMPILING})
+
+SET(LUAJIT_COMMAND "make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS}")
+SET(NGINX_COMMAND "./configure --with-pcre=${PCRE_SRC_DIR} --with-zlib=${ZLIB_SRC_DIR} --with-openssl=${OPENSSL_SRC_DIR} --user=www --group=www --build=muhkuh ${NGINX_PCRE_CONFIG} ${NGINX_OPENSSL_CONFIG} ${NGINX_COMPILER_CC} ${NGINX_COMPILER_CPP}")
+
+MESSAGE("*** LuaJit build command: ${LUAJIT_COMMAND}")
+MESSAGE("*** configure command: ${NGINX_COMMAND}")
+
+SET(CONFIGURE_CMD "cd bundle/LuaJIT-2.1-20230410 && ${LUAJIT_COMMAND} && cd ../.. && ${NGINX_COMMAND}")
 
 ExternalProject_Add(TARGET_openresty
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openresty
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/openresty-${VERSION_EXTERNAL}.tar.gz
                     URL_HASH SHA1=f8320b4d2d09fea46b01ee115465f8c67a36c024
                     DEPENDS TARGET_openssl TARGET_pcre TARGET_zlib
-#                    PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/v${VERSION_EXTERNAL}/src/TARGET_libuv --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
-                    CONFIGURE_COMMAND ./configure --with-pcre=${PCRE_SRC_DIR} --with-zlib=${ZLIB_SRC_DIR} --with-openssl=${OPENSSL_SRC_DIR} ${NGINX_CONFIG} ${NGINX_COMPILER}
+#                    PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/openresty/src/TARGET_openresty --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
+                    CONFIGURE_COMMAND /usr/bin/bash -c -- ${CONFIGURE_CMD}
                     BUILD_IN_SOURCE true
                     BUILD_COMMAND make
                     INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
