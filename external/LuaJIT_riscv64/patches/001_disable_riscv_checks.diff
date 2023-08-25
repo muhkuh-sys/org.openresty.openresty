@@ -41,3 +41,4 @@ diff -uNr LuaJIT-riscv/src/lj_arch.h LuaJIT-riscv_patched/src/lj_arch.h
 +//#endif
  #endif
  #endif
+ 
