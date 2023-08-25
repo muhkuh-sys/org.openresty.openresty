@@ -56,7 +56,16 @@ IF(${CMAKE_CROSSCOMPILING})
 
 	# Set the configure options for PCRE and openSSL.
 	SET(NGINX_PCRE_CONFIG "--with-pcre-conf-opt=--host=${CONFIGURE_HOST}")
-	SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-${CONFIGURE_ARCH} --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+	IF(${CONFIGURE_HOST} STREQUAL "aarch64-linux-gnu")
+		# aarch64 is "linux-aarch64".
+		SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-aarch64 --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+	ELSEIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+		# riscv64 is "linux64-riscv64".
+		SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux64-riscv64 --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+	ELSE(${CONFIGURE_HOST} STREQUAL "aarch64-linux-gnu")
+		# The default tries to guess the OpenSSL platform name.
+		SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-${CONFIGURE_ARCH} --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+	ENDIF(${CONFIGURE_HOST} STREQUAL "aarch64-linux-gnu")
 
 	# Select the patches.
 	SET(PATCHES_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/patches/${CONFIGURE_HOST}")
