@@ -64,7 +64,7 @@ IF(${CMAKE_CROSSCOMPILING})
 	# Use the external LuaJIT on riscv64.
 	IF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
 		SET(DEPENDS_LUAJIT TARGET_luajit)
-		SET(EXTERNAL_LUAJIT "--with-luajit=${CMAKE_BINARY_DIR}/external/luajit/install")
+		SET(EXTERNAL_LUAJIT "--with-luajit=${CMAKE_BINARY_DIR}/external/LuaJIT_riscv64/install/usr/local")
 	ENDIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
 ENDIF(${CMAKE_CROSSCOMPILING})
 
