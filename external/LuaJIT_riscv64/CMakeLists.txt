@@ -19,7 +19,9 @@ ExternalProject_Add(TARGET_luajit
                     PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/TARGET_luajit --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CONFIGURE_COMMAND true
 #                    BUILD_COMMAND make HOST_CC=gcc CROSS=riscv64-linux-gnu- TARGET_CFLAGS="-march=rv64imafdc_zicsr_zifencei -mabi=lp64d -mriscv-attribute"
-                    BUILD_COMMAND make HOST_CC=gcc CROSS=riscv64-linux-gnu-
-                    BUILD_IN_SOURCE TRUE
-                    INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
+#                    BUILD_COMMAND make HOST_CC=gcc CROSS=riscv64-linux-gnu-
+#                    BUILD_IN_SOURCE TRUE
+                    BUILD_COMMAND true
+#                    INSTALL_COMMAND make install DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/install
+                    INSTALL_COMMAND true
 )

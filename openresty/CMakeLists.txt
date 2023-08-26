@@ -59,37 +59,37 @@ IF(${CMAKE_CROSSCOMPILING})
 	IF(${CONFIGURE_HOST} STREQUAL "aarch64-linux-gnu")
 		# aarch64 is "linux-aarch64".
 		SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-aarch64 --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+		SET(LUAJIT_COMMAND "cd bundle/LuaJIT-2.1-20230410 && make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS} && cd ../.. && ")
 	ELSEIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
 		# riscv64 is "linux64-riscv64".
 		SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux64-riscv64 --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+		SET(LUAJIT_COMMAND "pwd && rm -rf bundle/LuaJIT-2.1-20230410 && cp -R ../../../../external/LuaJIT_riscv64/luajit/src/TARGET_luajit bundle/LuaJIT-2.1-20230410 && cd bundle/LuaJIT-2.1-20230410 && make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS} && cd ../.. && ")
+		SET(DEPENDS_LUAJIT TARGET_luajit)
 	ELSE(${CONFIGURE_HOST} STREQUAL "aarch64-linux-gnu")
 		# The default tries to guess the OpenSSL platform name.
 		SET(NGINX_OPENSSL_CONFIG "--with-openssl-opt=\"linux-${CONFIGURE_ARCH} --cross-compile-prefix=${CONFIGURE_HOST}-\"")
+		SET(LUAJIT_COMMAND "cd bundle/LuaJIT-2.1-20230410 && make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS} && cd ../.. && ")
 	ENDIF(${CONFIGURE_HOST} STREQUAL "aarch64-linux-gnu")
 
 	# Select the patches.
 	SET(PATCHES_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/patches/${CONFIGURE_HOST}")
 
-	# Use the external LuaJIT on riscv64.
-	IF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
-		SET(DEPENDS_LUAJIT TARGET_luajit)
-		SET(EXTERNAL_LUAJIT "--with-luajit=${CMAKE_BINARY_DIR}/external/LuaJIT_riscv64/install/usr/local")
-	ENDIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+#	# Use the external LuaJIT on riscv64.
+#	IF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+#		SET(DEPENDS_LUAJIT TARGET_luajit)
+#		SET(EXTERNAL_LUAJIT "--with-luajit=${CMAKE_BINARY_DIR}/external/LuaJIT_riscv64/install/usr/local")
+#	ENDIF(${CONFIGURE_HOST} STREQUAL "riscv64-linux-gnu")
+ELSE(${CMAKE_CROSSCOMPILING})
+	# Let openresty build the LuaJIT interpreter.
+	SET(LUAJIT_COMMAND "")
 ENDIF(${CMAKE_CROSSCOMPILING})
 
-IF(${CMAKE_CROSSCOMPILING} AND ("${CONFIGURE_HOST}" STREQUAL "riscv64-linux-gnu"))
-	# The RISCV64 port for LuaJIT is not yet part of the OpenResty distribution. It was already build in a separate step.
-	SET(LUAJIT_COMMAND /usr/bin/true)
-ELSE(${CMAKE_CROSSCOMPILING} AND ("${CONFIGURE_HOST}" STREQUAL "riscv64-linux-gnu"))
-	# Build LuaJIT before starting the OpenResty build. This makes it easier (or even possible) to pass special options for cross-building.
-	SET(LUAJIT_COMMAND "cd bundle/LuaJIT-2.1-20230410 && make ${LUAJIT_OPTION_HOST} ${LUAJIT_OPTION_CROSS} && cd ../..")
-ENDIF(${CMAKE_CROSSCOMPILING} AND ("${CONFIGURE_HOST}" STREQUAL "riscv64-linux-gnu"))
 MESSAGE("*** LuaJit build command: ${LUAJIT_COMMAND}")
 
 SET(NGINX_COMMAND "./configure --with-pcre=${PCRE_SRC_DIR} --with-zlib=${ZLIB_SRC_DIR} --with-openssl=${OPENSSL_SRC_DIR} ${EXTERNAL_LUAJIT} --user=www --group=www --build=muhkuh ${NGINX_PCRE_CONFIG} ${NGINX_OPENSSL_CONFIG} ${NGINX_COMPILER_CC} ${NGINX_COMPILER_CPP}")
 MESSAGE("*** configure command: ${NGINX_COMMAND}")
 
-SET(CONFIGURE_CMD "${LUAJIT_COMMAND} && ${NGINX_COMMAND}")
+SET(CONFIGURE_CMD "${LUAJIT_COMMAND}${NGINX_COMMAND}")
 
 ExternalProject_Add(TARGET_openresty
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openresty
