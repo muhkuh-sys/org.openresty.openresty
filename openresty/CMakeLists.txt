@@ -126,7 +126,9 @@ INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/package/install.lua
 
 # The openresty installation is in the path "/usr/local/...".
 # Add the complete "usr" folder to the installation.
-INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/usr DESTINATION .)
+INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/usr
+        USE_SOURCE_PERMISSIONS
+        DESTINATION .)
 
 CONFIGURE_FILE(installer/openresty.xml
                ${CPACK_OUTPUT_FILE_PREFIX}/openresty-${PROJECT_VERSION}-${JONCHKI_PLATFORM}.xml
