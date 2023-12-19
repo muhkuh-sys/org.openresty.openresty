@@ -1,7 +1,7 @@
 diff -uNr LuaJIT-riscv/src/lj_arch.h LuaJIT-riscv_patched/src/lj_arch.h
---- LuaJIT-riscv/src/lj_arch.h	2023-07-15 08:04:46.000000000 +0000
-+++ LuaJIT-riscv_patched/src/lj_arch.h	2023-08-01 14:47:31.829031298 +0000
-@@ -447,7 +447,7 @@
+--- LuaJIT-riscv/src/lj_arch.h	2023-12-12 11:23:46.000000000 +0100
++++ LuaJIT-riscv_patched/src/lj_arch.h	2023-12-19 12:45:49.280009501 +0100
+@@ -451,7 +451,7 @@
  #error "No support for RISC-V 32"
  
  #elif LUAJIT_TARGET == LUAJIT_ARCH_RISCV64
@@ -10,9 +10,9 @@ diff -uNr LuaJIT-riscv/src/lj_arch.h LuaJIT-riscv_patched/src/lj_arch.h
  
  #define LJ_ARCH_NAME		"riscv64"
  #define LJ_ARCH_BITS		64
-@@ -465,9 +465,9 @@
- // for now
- #define LUAJIT_NO_UNWIND	1
+@@ -467,9 +467,9 @@
+ #define LJ_TARGET_UNIFYROT	2	/* Want only IR_BROR, no ROLI */
+ #define LJ_ARCH_NUMMODE		LJ_NUMMODE_DUAL
  
 -#else
 -#error "No support for RISC-V 64 Soft-float/Single-float"
@@ -23,8 +23,8 @@ diff -uNr LuaJIT-riscv/src/lj_arch.h LuaJIT-riscv_patched/src/lj_arch.h
  
  #else
  #error "No target architecture defined"
-@@ -553,12 +553,12 @@
- #error "Only n64 ABI supported for MIPS64"
+@@ -564,12 +564,12 @@
+ #undef LJ_TARGET_MIPS
  #endif
  #elif LJ_TARGET_RISCV
 -#if !defined(__riscv_float_abi_double)
