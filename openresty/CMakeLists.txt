@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7)
 
-SET(VERSION_EXTERNAL "1.21.4.2")
+SET(VERSION_EXTERNAL "1.21.4.3")
 SET(VERSION_PACKAGE "1")
 
 PROJECT("openresty")
@@ -94,7 +94,7 @@ SET(CONFIGURE_CMD "${LUAJIT_COMMAND}${NGINX_COMMAND}")
 ExternalProject_Add(TARGET_openresty
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openresty
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/openresty-${VERSION_EXTERNAL}.tar.gz
-                    URL_HASH SHA1=f8320b4d2d09fea46b01ee115465f8c67a36c024
+                    URL_HASH SHA1=213e392ab3481c412a650943df4c01df567542ff
                     DEPENDS TARGET_openssl TARGET_pcre TARGET_zlib ${DEPENDS_LUAJIT}
                     PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/openresty/src/TARGET_openresty --patch-folder ${PATCHES_FOLDER} --strip 1
                     CONFIGURE_COMMAND /usr/bin/bash -c -- ${CONFIGURE_CMD}
