@@ -4,7 +4,7 @@ PROJECT("openssl")
 
 INCLUDE(ExternalProject)
 
-SET(VERSION_EXTERNAL "3.1.1")
+SET(VERSION_EXTERNAL "3.1.4")
 
 
 #----------------------------------------------------------------------------
@@ -15,7 +15,7 @@ SET(VERSION_EXTERNAL "3.1.1")
 ExternalProject_Add(TARGET_openssl
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/openssl
                     URL ${CMAKE_CURRENT_SOURCE_DIR}/openssl-${VERSION_EXTERNAL}.tar.gz
-                    URL_HASH SHA1=d01a0f243672d514aee14bdd74a5d109b6394a78
+                    URL_HASH SHA1=24c5d4308e0f901326f15c274c8c736117966499
                     CONFIGURE_COMMAND true
                     BUILD_COMMAND true
                     INSTALL_COMMAND true
