@@ -14,8 +14,8 @@ SET(VERSION_EXTERNAL "2.1.0")
 
 ExternalProject_Add(TARGET_luajit
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/luajit
-                    URL ${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT-riscv_GIT5938da937b13.zip
-                    URL_HASH SHA1=3076c16525c0fbc46e47781539fc3d8e8fba215f
+                    URL ${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT-riscv_GITa05dc6fe84c3.zip
+                    URL_HASH SHA1=0ddc3d04bfa8a2d9f4d96c1a0af75da913cd5551
                     PATCH_COMMAND "${PYTHON_INTERPRETER}" ${CMAKE_HOME_DIRECTORY}/cmake/tools/apply_patches.py --working-folder ${CMAKE_CURRENT_BINARY_DIR}/luajit/src/TARGET_luajit --patch-folder ${CMAKE_CURRENT_SOURCE_DIR}/patches --strip 1
                     CONFIGURE_COMMAND true
 #                    BUILD_COMMAND make HOST_CC=gcc CROSS=riscv64-linux-gnu- TARGET_CFLAGS="-march=rv64imafdc_zicsr_zifencei -mabi=lp64d -mriscv-attribute"
